@@ -57,18 +57,16 @@ def update_todo(item_id: str, item: TodoUpdate) -> TodoResponse:
     """
     Update a todo by id
     """
-    for todo in todos:
-        if todo.id == item_id:
-            return TodoResponse(id=todo.id, description=item.description, completed=item.completed, created_at=todo.created_at)
-    raise HTTPException(status_code=404, detail="Todo not found")
+    todo = read_todo(item_id)
+    todo.description = item.description
+    todo.completed = item.completed
+    return todo
 
 @app.delete("/todos/{item_id}", response_model=dict)
 def delete_todo(item_id: str) -> dict:
     """
     Delete a todo by id
     """
-    for todo in todos:
-        if todo.id == item_id:
-            todos.remove(todo)
-            return {"message": "Todo deleted successfully"}
-    raise HTTPException(status_code=404, detail="Todo not found")
+    todo = read_todo(item_id)
+    todos.remove(todo)
+    return {"message": "Todo deleted successfully"}
