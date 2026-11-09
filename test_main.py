@@ -7,13 +7,13 @@ from main import app
 client = TestClient(app)
 
 def test_get_todos():
-    response = client.get("/")
+    response = client.get("/todos")
     assert response.status_code == 200
     assert response.json() == []
 
 def test_create_todo():
     response = client.post("/todos", json={"description": "Test Todo"})
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert response.json()["description"] == "Test Todo"
     assert response.json()["completed"] == False
     assert response.json()["created_at"] is not None

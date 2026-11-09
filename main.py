@@ -26,8 +26,8 @@ class TodoResponse(BaseModel):
 
 todos: list[TodoResponse] = []
 
-@app.get("/", response_model=list[TodoResponse])
-def read_root() -> list[TodoResponse]:
+@app.get("/todos", response_model=list[TodoResponse])
+def read_todos() -> list[TodoResponse]:
     """
     Get all todos
     """
@@ -43,20 +43,22 @@ def read_todo(item_id: str) -> TodoResponse:
             return todo
     raise HTTPException(status_code=404, detail="Todo not found")
 
-@app.post("/todos", response_model=TodoResponse)
+@app.post("/todos", response_model=TodoResponse, status_code=201)
 def create_todo(item: TodoCreate) -> TodoResponse:
     """
     Create a todo
     """
     # random id (5 alphanumeric characters)
     id = ''.join(random.choices(string.ascii_letters + string.digits, k=5))
-    created_at = item.created_at
-    updated_at = item.updated_at
-    completed = item.completed
-    description = item.description.strip()
-
-    todos.append(TodoResponse(id=id, description=description, completed=completed, created_at=created_at, updated_at=updated_at))
-    return TodoResponse(id=id, description=description, completed=completed, created_at=created_at, updated_at=updated_at)
+    todo = TodoResponse(
+        id=id,
+        description=item.description.strip(),
+        completed=item.completed,
+        created_at=item.created_at,
+        updated_at=item.updated_at,
+    )
+    todos.append(todo)
+    return todo
 
 @app.put("/todos/{item_id}", response_model=TodoResponse)
 def update_todo(item_id: str, item: TodoUpdate) -> TodoResponse:
